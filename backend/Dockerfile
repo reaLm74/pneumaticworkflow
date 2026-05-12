@@ -10,18 +10,15 @@ LABEL org.opencontainers.image.title="Pneumatic API" \
 
 # Install Internationalization requirements
 RUN apt-get update && \
-    apt-get -y install gettext
-
-# postgresql client for execute psql command
-RUN apt-get update && apt-get -y install postgresql-client
+    apt-get -y install gettext postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 
 # The enviroment variable ensures that the python output is set straight
 # to the terminal with out buffering it first
 
-RUN pip install poetry==1.5.1
-
-COPY ./pyproject.toml ./poetry.lock /tmp/
+# Use pip with exported requirements.txt for faster install (vs poetry)
+COPY ./requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 WORKDIR /pneumatic_backend
-RUN poetry config virtualenvs.create false && \
-    poetry install --without dev --no-root --no-interaction --directory /tmp
+COPY . .
