@@ -48,7 +48,9 @@
       },
       "variables": {
         "BACKEND_URL": "https://${{backend.RAILWAY_PUBLIC_DOMAIN}}",
-        "WSS_URL": "wss://${{backend.RAILWAY_PUBLIC_DOMAIN}}"
+        "BACKEND_PRIVATE_URL": "https://${{backend.RAILWAY_PUBLIC_DOMAIN}}",
+        "WSS_URL": "wss://${{backend.RAILWAY_PUBLIC_DOMAIN}}",
+        "FRONTEND_URL": "https://${{RAILWAY_PUBLIC_DOMAIN}}"
       }
     },
     "Postgres": {
