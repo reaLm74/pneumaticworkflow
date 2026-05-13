@@ -23,10 +23,7 @@ RUN npm ci --legacy-peer-deps
 
 ADD . /pneumatic_frontend/
 
-# Build client-side assets (webpack production)
-RUN NODE_ENV=production npm run build-client:prod
-
-# ===== Runtime environment (override via Railway Dashboard) =====
+# ===== Build-time environment (used by webpack DefinePlugin) =====
 ENV NODE_ENV=production \
     SIGNUP=yes \
     BILLING=no \
@@ -34,7 +31,20 @@ ENV NODE_ENV=production \
     GOOGLE_AUTH=no \
     MS_AUTH=no \
     SSO_AUTH=no \
-    BACKEND_URL=http://localhost:8000 \
+    AI=no \
+    ANALYTICS=no \
+    PUSH=no \
+    STORAGE=no \
+    MCS_RUN_ENV=prod \
+    LANGUAGE_CODE=en \
+    RELEASE=1.0.0
+
+# Build client-side assets (webpack production)
+RUN npm run build-client:prod
+
+# ===== Runtime environment (override via Railway Dashboard) =====
+ENV BACKEND_URL=http://localhost:8000 \
     WSS_URL=ws://localhost:8000
 
 CMD ["pm2-runtime", "start", "pm2.json"]
+
