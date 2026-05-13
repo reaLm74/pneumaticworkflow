@@ -3,7 +3,8 @@
   "services": {
     "backend": {
       "source": {
-        "repo": "",
+        "repo": "reaLm74/pneumaticworkflow",
+        "branch": "master",
         "rootDirectory": "backend"
       },
       "build": {
@@ -33,7 +34,8 @@
     },
     "frontend": {
       "source": {
-        "repo": "",
+        "repo": "reaLm74/pneumaticworkflow",
+        "branch": "master",
         "rootDirectory": "frontend"
       },
       "build": {
