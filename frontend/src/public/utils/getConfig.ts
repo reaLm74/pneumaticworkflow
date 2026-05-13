@@ -99,7 +99,7 @@ export function getConfig(): TConfig {
     "formSubdomain": FORM_DOMAIN,
     "mainPage": SITE_URL,
     "api": {
-      "privateUrl": BACKEND_PRIVATE_URL,
+      "privateUrl": (BACKEND_PRIVATE_URL && !BACKEND_PRIVATE_URL.includes('.railway.internal')) ? BACKEND_PRIVATE_URL : BACKEND_URL,
       "publicUrl": BACKEND_URL,
       "wsPublicUrl": WSS_URL
     },
