@@ -17,22 +17,28 @@
 │  port: 8000  │     │  port: 8080  │
 └──────────────┘     └──────┬───────┘
                             │
-                    ┌───────┴───────┐
-                    │               │
-              ┌─────▼─────┐  ┌─────▼─────┐
-              │  Postgres  │  │   Redis    │
-              │  (plugin)  │  │  (plugin)  │
-              └────────────┘  └────────────┘
+                    ┌───────┼───────┐
+                    │       │       │
+              ┌─────▼──┐ ┌─▼────┐ ┌▼─────────┐
+              │Postgres │ │Redis │ │  Celery   │
+              │(plugin) │ │(plgn)│ │Worker+Beat│
+              └─────────┘ └──────┘ └───────────┘
 ```
 
 ### Сервисы
 
-| Сервис     | Источник               | Builder    | Порт |
-|------------|------------------------|------------|------|
-| Backend    | `backend/Dockerfile`   | DOCKERFILE | 8080 (Railway PORT) |
-| Frontend   | `frontend/Dockerfile`  | DOCKERFILE | 8000 |
-| Postgres   | Railway plugin         | —          | 5432 |
-| Redis      | Railway plugin         | —          | 6379 |
+| Сервис        | Источник               | Builder    | Порт | Назначение                     |
+|---------------|------------------------|------------|------|--------------------------------|
+| Backend       | `backend/Dockerfile`   | DOCKERFILE | 8080 | Django API + Gunicorn/Uvicorn  |
+| Frontend      | `frontend/Dockerfile`  | DOCKERFILE | 8000 | Node.js + webpack + pm2        |
+| Celery Worker | `backend/Dockerfile`   | DOCKERFILE | —    | Фоновая обработка задач        |
+| Celery Beat   | `backend/Dockerfile`   | DOCKERFILE | —    | Периодические задачи (cron)    |
+| Postgres      | Railway plugin         | —          | 5432 | База данных                    |
+| Redis         | Railway plugin         | —          | 6379 | Кеш, сессии, брокер Celery     |
+
+> **Примечание:** Celery Worker и Celery Beat используют тот же Docker-образ что и Backend,
+> но с переопределённой командой запуска (`startCommand`). RabbitMQ не нужен —
+> в качестве брокера используется Redis (db 4).
 
 ## Переменные окружения
 
@@ -65,6 +71,17 @@
 > а не `backend.railway.internal`. Railway private networking использует IPv6,
 > который не поддерживается Node.js `request` модулем — запросы падают с `ECONNREFUSED`.
 
+### Celery Worker / Celery Beat
+
+Наследуют те же переменные БД и Redis что и Backend.
+Не имеют публичного домена (внутренние воркеры).
+
+| Переменная          | Значение                                           |
+|---------------------|-----------------------------------------------------|
+| `CELERY_BROKER_URL` | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/4` |
+| Все `POSTGRES_*`    | Те же что у Backend                                 |
+| Все `*_REDIS_URL`   | Те же что у Backend                                 |
+
 ## Feature-флаги (Frontend Dockerfile)
 
 Флаги задаются как `ENV` в `frontend/Dockerfile` **до** `RUN npm run build-client:prod`,
@@ -92,7 +109,7 @@
 Шаблон настроен на автодеплой из GitHub:
 - **Репозиторий:** `reaLm74/pneumaticworkflow`
 - **Ветка:** `master`
-- При каждом `git push` в `master` Railway автоматически пересобирает оба сервиса
+- При каждом `git push` в `master` Railway автоматически пересобирает все сервисы
 
 ## Известные особенности
 
