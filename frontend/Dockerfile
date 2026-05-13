@@ -1,4 +1,5 @@
 FROM node:18-bookworm-slim
+# Cache buster: 2026-05-13T21:55:00Z
 
 LABEL org.opencontainers.image.title="Pneumatic web client" \
       org.opencontainers.image.source="https://github.com/pneumaticapp/pneumaticworkflow/frontend" \
