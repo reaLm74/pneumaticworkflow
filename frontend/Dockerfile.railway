@@ -8,6 +8,19 @@ LABEL org.opencontainers.image.title="Pneumatic web client" \
       org.opencontainers.image.documentation="https://github.com/pneumaticapp/pneumaticworkflow/wiki" \
       org.opencontainers.image.licenses="Apache-2.0"
 
+# ===== Default environment (override via Railway Dashboard) =====
+ENV NODE_ENV=production \
+    SIGNUP=yes \
+    BILLING=no \
+    CAPTCHA=no \
+    GOOGLE_AUTH=no \
+    MS_AUTH=no \
+    SSO_AUTH=no \
+    BACKEND_URL=http://localhost:8000 \
+    WSS_URL=ws://localhost:8000
+
+# ===== Build =====
+
 # Install pm2
 RUN apt-get update && \
     apt-get install -y sudo curl nano && \

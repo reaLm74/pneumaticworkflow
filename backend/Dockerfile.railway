@@ -13,9 +13,64 @@ RUN apt-get update && \
     apt-get -y install gettext postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
-# The environment variable ensures that the python output is set straight
-# to the terminal without buffering it first
-ENV PYTHONUNBUFFERED=1
+# ===== Default environment (override via Railway Dashboard) =====
+
+# Django core
+ENV PYTHONUNBUFFERED=1 \
+    ENVIRONMENT=Production \
+    DJANGO_SETTINGS_MODULE=src.settings \
+    DJANGO_SECRET_KEY=railway-demo-secret-key-change-in-production \
+    DJANGO_DEBUG=no \
+    LANGUAGE_CODE=en \
+    RELEASE=1.0.0 \
+    ADMIN_PATH=admin \
+    SIGNUP=yes
+
+# Postgres (override with Railway-provided values)
+ENV POSTGRES_HOST=postgres.railway.internal \
+    POSTGRES_PORT=5432 \
+    POSTGRES_DB=railway \
+    POSTGRES_USER=postgres \
+    POSTGRES_PASSWORD=password \
+    POSTGRES_REPLICA_HOST=postgres.railway.internal \
+    POSTGRES_REPLICA_PORT=5432 \
+    POSTGRES_REPLICA_DB=railway \
+    POSTGRES_REPLICA_USER=postgres \
+    POSTGRES_REPLICA_PASSWORD=password
+
+# Redis (override with Railway-provided values)
+ENV CACHE_REDIS_URL=redis://redis.railway.internal:6379/0 \
+    AUTH_REDIS_URL=redis://redis.railway.internal:6379/1 \
+    CHANNELS_REDIS_URL=redis://redis.railway.internal:6379/2 \
+    SESSION_REDIS_URL=redis://redis.railway.internal:6379/3 \
+    CELERY_BROKER_URL=redis://redis.railway.internal:6379/4
+
+# Feature flags (all disabled by default)
+ENV BILLING=no \
+    ANALYTICS=no \
+    CAPTCHA=no \
+    EMAIL=no \
+    PUSH=no \
+    STORAGE=no \
+    AI=no \
+    GOOGLE_AUTH=no \
+    MS_AUTH=no \
+    SSO_AUTH=no \
+    VERIFICATION_CHECK=no \
+    ENABLE_LOGGING=no
+
+# CORS
+ENV CORS_ALLOW_CREDENTIALS=yes \
+    CORS_ORIGIN_ALLOW_ALL=yes
+
+# URLs (override after generating Railway domains)
+ENV FRONTEND_URL=http://localhost:3000 \
+    FORMS_URL=http://localhost:3000 \
+    BACKEND_URL=http://localhost:8000 \
+    ALLOWED_HOSTS=* \
+    CORS_ORIGIN_WHITELIST=http://localhost:3000
+
+# ===== Build =====
 
 RUN pip install poetry==1.5.1
 
@@ -25,7 +80,6 @@ WORKDIR /pneumatic_backend
 RUN poetry config virtualenvs.create false && \
     poetry install --without dev --no-root --no-interaction --directory /tmp
 
-# Copy application code
 COPY . .
 
 CMD bash -c "\
