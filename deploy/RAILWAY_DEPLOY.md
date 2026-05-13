@@ -1,9 +1,28 @@
 # 🚀 Развёртывание PneumaticWorkflow на Railway
 
-Полная инструкция по развёртыванию проекта с нуля на [Railway](https://railway.app).  
-Время: **~5 минут**.
+Полная инструкция по развёртыванию проекта с нуля на [Railway](https://railway.app).
 
 ---
+
+## ⚡ Быстрый способ (railway.json)
+
+В корне репозитория есть файл `railway.json` — он содержит **всю конфигурацию проекта**: 4 сервиса, переменные, настройки сборки.
+
+1. Откройте [railway.app](https://railway.app) → войдите через GitHub
+2. **"New Project"** → **"Deploy from GitHub Repo"** → выберите `pneumaticworkflow`
+3. Railway прочитает `railway.json` и автоматически создаст все сервисы
+4. Сгенерируйте домены для Backend и Frontend:
+   - **Backend → Settings → Networking** → **"Generate Domain"**
+   - **Frontend → Settings → Networking** → **"Generate Domain"**
+5. Готово! Все переменные подставятся автоматически через `${{...}}`
+
+> 💡 Если Railway не подхватил `railway.json` — используйте ручной способ ниже.
+
+---
+
+## 📋 Ручной способ (пошаговый)
+
+
 
 ## 📐 Архитектура
 
@@ -148,6 +167,7 @@ Railway автоматически запустит деплой обоих се
 
 ```
 📁 pneumaticworkflow/
+├── railway.json                ← конфигурация всего проекта (быстрый деплой)
 ├── backend/
 │   ├── Dockerfile              ← для локальной разработки (docker-compose)
 │   └── Dockerfile.railway      ← для Railway (с ENV, COPY, CMD)
