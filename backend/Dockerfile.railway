@@ -28,25 +28,16 @@ RUN poetry config virtualenvs.create false && \
 # Copy application code
 COPY . .
 
-# Create startup script
-RUN printf '#!/bin/bash\n\
-set -e\n\
-echo "=== Running migrations ==="\n\
-python manage.py migrate\n\
-echo "=== Collecting static files ==="\n\
-python manage.py collectstatic --no-input || echo "Warning: collectstatic failed (non-critical)"\n\
-echo "=== Initializing periodic tasks ==="\n\
-python manage.py init_periodic_tasks || echo "Warning: init_periodic_tasks failed (non-critical)"\n\
-echo "=== Compiling messages ==="\n\
-python manage.py compilemessages || echo "Warning: compilemessages failed (non-critical)"\n\
-echo "=== Starting Gunicorn on port ${PORT:-8000} ==="\n\
-exec gunicorn src.asgi:application \\\n\
-    --workers 1 \\\n\
-    -k uvicorn.workers.UvicornWorker \\\n\
-    --worker-tmp-dir /dev/shm \\\n\
-    --bind 0.0.0.0:${PORT:-8000} \\\n\
-    --timeout 200 \\\n\
-    --error-logfile - \\\n\
-    --access-logfile -\n' > /start.sh && chmod +x /start.sh
-
-CMD ["bash", "/start.sh"]
+CMD bash -c "\
+  python manage.py migrate && \
+  python manage.py collectstatic --no-input || true && \
+  python manage.py init_periodic_tasks || true && \
+  python manage.py compilemessages || true && \
+  exec gunicorn src.asgi:application \
+    --workers 1 \
+    -k uvicorn.workers.UvicornWorker \
+    --worker-tmp-dir /dev/shm \
+    --bind 0.0.0.0:\${PORT:-8000} \
+    --timeout 200 \
+    --error-logfile - \
+    --access-logfile -"
