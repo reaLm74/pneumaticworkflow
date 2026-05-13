@@ -27,3 +27,5 @@ RUN poetry config virtualenvs.create false && \
 
 # Copy application code (not needed in dev with docker-compose volumes)
 COPY . .
+
+CMD ["bash", "start.sh"]

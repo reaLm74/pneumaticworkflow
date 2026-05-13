@@ -23,3 +23,5 @@ ADD . /pneumatic_frontend/
 
 # Build client-side assets (webpack production)
 RUN npm run build-client:prod
+
+CMD ["pm2-runtime", "start", "pm2.json"]
