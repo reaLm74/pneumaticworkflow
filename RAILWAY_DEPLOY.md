@@ -27,18 +27,20 @@
 
 ### Сервисы
 
-| Сервис        | Источник               | Builder    | Порт | Назначение                     |
-|---------------|------------------------|------------|------|--------------------------------|
-| Backend       | `backend/Dockerfile`   | DOCKERFILE | 8080 | Django API + Gunicorn/Uvicorn  |
-| Frontend      | `frontend/Dockerfile`  | DOCKERFILE | 8000 | Node.js + webpack + pm2        |
-| Celery Worker | `backend/Dockerfile`   | DOCKERFILE | —    | Фоновая обработка задач        |
-| Celery Beat   | `backend/Dockerfile`   | DOCKERFILE | —    | Периодические задачи (cron)    |
-| Postgres      | Railway plugin         | —          | 5432 | База данных                    |
-| Redis         | Railway plugin         | —          | 6379 | Кеш, сессии, брокер Celery     |
+| Сервис        | Источник                    | Порт | Назначение                     |
+|---------------|-----------------------------|------|--------------------------------|
+| Backend       | `backend/Dockerfile`        | 8080 | Django API + Gunicorn/Uvicorn  |
+| Frontend      | `frontend/Dockerfile`       | 8000 | Node.js + webpack + pm2        |
+| Celery Worker | `backend/Dockerfile`        | —    | Фоновая обработка задач        |
+| Celery Beat   | `backend/Dockerfile`        | —    | Периодические задачи (cron)    |
+| RabbitMQ      | `rabbitmq:3.13-management`  | 5672 | Брокер сообщений для Celery    |
+| Postgres      | Railway plugin              | 5432 | База данных                    |
+| Redis         | Railway plugin              | 6379 | Кеш, сессии, WebSocket каналы  |
 
 > **Примечание:** Celery Worker и Celery Beat используют тот же Docker-образ что и Backend,
-> но с переопределённой командой запуска (`startCommand`). RabbitMQ не нужен —
-> в качестве брокера используется Redis (db 4).
+> но с переопределённой командой запуска (`startCommand`). RabbitMQ используется
+> как брокер для Celery (протокол AMQP), как и в docker-compose.
+
 
 ## Переменные окружения
 
