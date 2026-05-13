@@ -61,6 +61,7 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     image: pneumaticworkflow/pneumatic-backend:${TAG:-stable}
     container_name: pneumatic-backend
     command: >
@@ -170,6 +171,7 @@ services:
   celery:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     image: pneumaticworkflow/pneumatic-celery:${TAG:-stable}
     container_name: pneumatic-celery
     environment:
@@ -268,6 +270,7 @@ services:
   celery-beat:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     image: pneumaticworkflow/pneumatic-celery-beat:${TAG:-stable}
     container_name: pneumatic-celery-beat
     environment:
@@ -365,6 +368,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile.dev
     image: pneumaticworkflow/pneumatic-frontend:${TAG:-stable}
     container_name: pneumatic-frontend
     environment:

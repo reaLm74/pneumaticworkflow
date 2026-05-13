@@ -61,6 +61,7 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: pneumatic-backend
     command: >
       sh -c "python manage.py migrate &&
@@ -170,6 +171,7 @@ services:
   celery:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: pneumatic-celery
     environment:
       BACKEND_URL: ${BACKEND_URL:-http://localhost:8001}
@@ -267,6 +269,7 @@ services:
   celery-beat:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: pneumatic-celery-beat
     environment:
       BACKEND_URL: ${BACKEND_URL:-http://localhost:8001}
@@ -363,6 +366,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: pneumatic-frontend
     environment:
       BACKEND_PRIVATE_URL: ${BACKEND_PRIVATE_URL:-http://pneumatic-nginx/}

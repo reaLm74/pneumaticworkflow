@@ -8,12 +8,13 @@ LABEL org.opencontainers.image.title="Pneumatic web client" \
       org.opencontainers.image.documentation="https://github.com/pneumaticapp/pneumaticworkflow/wiki" \
       org.opencontainers.image.licenses="Apache-2.0"
 
-# Installation pm2
-# pm2 image does not build in amd64/linux (debian) https://hub.docker.com/r/keymetrics/pm2/
-# Install pm2 manually following instruction: https://pm2.io/docs/runtime/guide/installation/
-RUN apt-get update
-RUN apt-get install -y sudo curl nano
-RUN npm install pm2 -g
+# ===== Build =====
+
+# Install pm2
+RUN apt-get update && \
+    apt-get install -y sudo curl nano && \
+    rm -rf /var/lib/apt/lists/* && \
+    npm install pm2 -g
 
 WORKDIR /pneumatic_frontend
 ADD package-lock.json /pneumatic_frontend/package-lock.json
@@ -21,3 +22,19 @@ ADD package.json /pneumatic_frontend/package.json
 RUN npm ci --legacy-peer-deps
 
 ADD . /pneumatic_frontend/
+
+# Build client-side assets (webpack production)
+RUN NODE_ENV=production npm run build-client:prod
+
+# ===== Runtime environment (override via Railway Dashboard) =====
+ENV NODE_ENV=production \
+    SIGNUP=yes \
+    BILLING=no \
+    CAPTCHA=no \
+    GOOGLE_AUTH=no \
+    MS_AUTH=no \
+    SSO_AUTH=no \
+    BACKEND_URL=http://localhost:8000 \
+    WSS_URL=ws://localhost:8000
+
+CMD ["pm2-runtime", "start", "pm2.json"]
