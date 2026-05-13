@@ -22,3 +22,6 @@ frontend/test-results
 .antigravity/
 
 
+
+# Railway env backups (contain secrets)
+deploy/*.env
