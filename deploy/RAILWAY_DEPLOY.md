@@ -1,43 +1,44 @@
 # 🚀 Развёртывание PneumaticWorkflow на Railway
 
 Инструкция по развёртыванию проекта с нуля на [Railway](https://railway.app).  
-Два способа: **быстрый** (через шаблон) и **ручной**.
+Два способа: **быстрый** (один клик) и **ручной** (пошаговый).
 
 ---
 
-## ⚡ Способ 1: Через Railway Template (рекомендуемый)
+## ⚡ Способ 1: Через шаблон (рекомендуемый)
 
-Самый быстрый способ — создать **шаблон** из рабочего проекта, а потом разворачивать одним кликом.
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy/3Z0WLi)
 
-### Создание шаблона (один раз):
+### Как использовать:
 
-1. Откройте рабочий проект в [Dashboard](https://railway.app)
-2. Нажмите **Settings** (шестерёнка в правом верхнем углу канваса)
-3. Прокрутите вниз до **"Generate Template from Project"**
-4. Нажмите **"Create Template"**
-5. Проверьте настройки сервисов в конструкторе шаблона:
-   - У Backend и Frontend должен быть Root Directory (`/backend`, `/frontend`)
-   - Переменные с `${{...}}` должны быть на месте
-6. Нажмите **"Create Template"**
-7. Скопируйте ссылку на шаблон
-
-### Развёртывание из шаблона:
-
-1. Откройте ссылку на шаблон
-2. Нажмите **"Deploy"**
-3. Railway создаст все 4 сервиса автоматически (Backend, Frontend, Postgres, Redis)
-4. Сгенерируйте домены:
-   - **Backend → Settings → Networking** → **"Generate Domain"**
-   - **Frontend → Settings → Networking** → **"Generate Domain"**
+1. Нажмите кнопку **"Deploy on Railway"** выше (или откройте [ссылку](https://railway.com/deploy/3Z0WLi))
+2. Войдите через **GitHub** (если ещё не авторизованы)
+3. Нажмите **"Deploy"** — Railway автоматически создаст все 4 сервиса:
+   - **Backend** (Django + Gunicorn) — из `Dockerfile.railway`
+   - **Frontend** (Express + PM2) — из `Dockerfile.railway`
+   - **PostgreSQL** — база данных
+   - **Redis** — кэш и очереди
+4. Подождите **~10 минут** пока Backend и Frontend соберутся
 5. Готово! 🎉
 
-> 💡 В `railway.json` в корне репо хранится конфигурация проекта как справочник (все сервисы, переменные, настройки сборки).
+> 💡 Все переменные (пароли, URL-ы, подключения к БД) настраиваются **автоматически** через Reference Variables — ничего копировать вручную не нужно!
+
+### Проверка:
+
+- **Backend:** откройте `https://<ваш-backend-домен>/accounts/user`  
+  Ответ: `{"detail": "Authentication credentials were not provided."}` ✅
+- **Frontend:** откройте `https://<ваш-frontend-домен>`  
+  Должна появиться страница входа/регистрации ✅
+
+> Домены видны в Dashboard → кликните на сервис → вверху будет URL.
 
 ---
 
 ## 📋 Способ 2: Вручную (пошаговый)
 
-## 📐 Архитектура
+Если шаблон не подходит — можно настроить проект вручную.
+
+### 📐 Архитектура
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -54,30 +55,22 @@
 └──────────────────────────────────────────────────────┘
 ```
 
----
-
-## Шаг 1. Создание проекта
+### Шаг 1. Создание проекта
 
 1. Откройте [railway.app](https://railway.app) → войдите через GitHub
 2. **"New Project"** → **"Empty Project"**
 
----
-
-## Шаг 2. Добавление баз данных
+### Шаг 2. Добавление баз данных
 
 1. **"+ New"** → **"Database"** → **"Add PostgreSQL"** — подождите 30 сек
 2. **"+ New"** → **"Database"** → **"Add Redis"** — подождите 30 сек
 
 > 💡 Ничего копировать не нужно — мы будем использовать Reference Variables.
 
----
-
-## Шаг 3. Добавление Backend
+### Шаг 3. Добавление Backend
 
 1. **"+ New"** → **"GitHub Repo"** → выберите репозиторий `pneumaticworkflow`
 2. Переименуйте сервис: нажмите на него → **Settings** → **Service Name** → `Backend`
-
-### Настройка:
 
 **Settings → Source:**
 | Параметр | Значение |
@@ -92,13 +85,9 @@
 > ⚠️ Если поле Dockerfile Path неактивно, добавьте переменную:  
 > **Variables** → `RAILWAY_DOCKERFILE_PATH` = `Dockerfile.railway`
 
-### Генерация домена:
-
 **Settings → Networking → Public Networking** → **"Generate Domain"**
 
-### Переменные:
-
-Перейдите в **Variables** → нажмите **"RAW Editor"** → вставьте целиком:
+**Variables** → **"RAW Editor"** → вставьте целиком:
 
 ```
 POSTGRES_PASSWORD=${{Postgres.POSTGRES_PASSWORD}}
@@ -115,18 +104,14 @@ ALLOWED_HOSTS=${{RAILWAY_PUBLIC_DOMAIN}} ${{RAILWAY_PRIVATE_DOMAIN}} localhost
 CORS_ORIGIN_WHITELIST=https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}} https://${{RAILWAY_PUBLIC_DOMAIN}}
 ```
 
-> 💡 `${{...}}` — это Reference Variables. Railway автоматически подставит реальные значения (пароли, домены). Ничего копировать вручную не нужно!
+> 💡 `${{...}}` — это Reference Variables. Railway автоматически подставит реальные значения. Ничего копировать вручную не нужно!
 
 Нажмите **"Update Variables"**.
 
----
-
-## Шаг 4. Добавление Frontend
+### Шаг 4. Добавление Frontend
 
 1. **"+ New"** → **"GitHub Repo"** → тот же репозиторий `pneumaticworkflow`
 2. Переименуйте → `Frontend`
-
-### Настройка:
 
 **Settings → Source:**
 | Параметр | Значение |
@@ -138,11 +123,7 @@ CORS_ORIGIN_WHITELIST=https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}} https://${{RAI
 |----------|----------|
 | Dockerfile Path | `Dockerfile.railway` |
 
-### Генерация домена:
-
 **Settings → Networking → Public Networking** → **"Generate Domain"**
-
-### Переменные:
 
 **Variables** → **"RAW Editor"** → вставьте:
 
@@ -153,33 +134,17 @@ WSS_URL=wss://${{Backend.RAILWAY_PUBLIC_DOMAIN}}
 
 Нажмите **"Update Variables"**.
 
----
+### Шаг 5. Готово! 🎉
 
-## Шаг 5. Готово! 🎉
-
-Railway автоматически запустит деплой обоих сервисов.
-
-### Проверка (через 3-5 минут):
-
-**Backend:**  
-Откройте `https://<ваш-backend-домен>/accounts/user`  
-Ожидаемый ответ:
-```json
-{"detail": "Authentication credentials were not provided."}
-```
-
-**Frontend:**  
-Откройте `https://<ваш-frontend-домен>`  
-Должна появиться страница входа/регистрации.
+Railway автоматически запустит деплой. Подождите ~10 минут.
 
 ---
 
-## 📝 Что где находится
-
-### Файлы в репозитории:
+## 📝 Структура файлов
 
 ```
 📁 pneumaticworkflow/
+├── railway.json                ← конфигурация шаблона (все сервисы и переменные)
 ├── backend/
 │   ├── Dockerfile              ← для локальной разработки (docker-compose)
 │   └── Dockerfile.railway      ← для Railway (с ENV, COPY, CMD)
@@ -204,11 +169,17 @@ Railway автоматически запустит деплой обоих се
 
 ## ❓ Частые проблемы
 
+### Postgres Crashed — `PGDATA variable does not start with the expected volume mount path`
+**Причина:** Отсутствует переменная `PGDATA` в Postgres.  
+**Решение:** Добавьте в Postgres → Variables:  
+`PGDATA=/var/lib/postgresql/data/pgdata`  
+Затем **Redeploy**.
+
 ### `502 Application failed to respond`
 **Причина:** Backend не может подключиться к Postgres или Redis.  
 **Решение:** 
 - Проверьте что Postgres и Redis запущены (зелёный статус)
-- Проверьте переменные — `${{Postgres.POSTGRES_PASSWORD}}` должен показывать реальное значение, а не `${{...}}`
+- Проверьте переменные — `${{Postgres.POSTGRES_PASSWORD}}` должен показывать реальное значение
 
 ### `Failed to lookup view "main"`
 **Причина:** Webpack не собрал клиентские файлы.  
@@ -216,11 +187,7 @@ Railway автоматически запустит деплой обоих се
 
 ### Backend зависает после `Starting Container`
 **Причина:** DNS `postgres.railway.internal` не резолвится.  
-**Решение:** Подождите 1-2 минуты — Private Networking иногда стартует с задержкой. Или нажмите Redeploy.
-
-### `Networking settings temporarily unavailable`
-**Причина:** Временная проблема Railway.  
-**Решение:** Подождите 5-10 минут.
+**Решение:** Подождите 1-2 минуты или нажмите Redeploy.
 
 ---
 

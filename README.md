@@ -1,5 +1,6 @@
 [![Documentation](https://img.shields.io/badge/docs-support.pneumatic.app-blue)](https://support.pneumatic.app/en/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy/3Z0WLi)
 
 
 
