@@ -18,8 +18,16 @@
         "serviceDomain": {}
       },
       "variables": {
-        "POSTGRES_PASSWORD": "${{Postgres.POSTGRES_PASSWORD}}",
-        "POSTGRES_REPLICA_PASSWORD": "${{Postgres.POSTGRES_PASSWORD}}",
+        "POSTGRES_HOST": "${{Postgres.PGHOST}}",
+        "POSTGRES_PORT": "${{Postgres.PGPORT}}",
+        "POSTGRES_DB": "${{Postgres.PGDATABASE}}",
+        "POSTGRES_USER": "${{Postgres.PGUSER}}",
+        "POSTGRES_PASSWORD": "${{Postgres.PGPASSWORD}}",
+        "POSTGRES_REPLICA_HOST": "${{Postgres.PGHOST}}",
+        "POSTGRES_REPLICA_PORT": "${{Postgres.PGPORT}}",
+        "POSTGRES_REPLICA_DB": "${{Postgres.PGDATABASE}}",
+        "POSTGRES_REPLICA_USER": "${{Postgres.PGUSER}}",
+        "POSTGRES_REPLICA_PASSWORD": "${{Postgres.PGPASSWORD}}",
         "CACHE_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
         "AUTH_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
         "CHANNELS_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/2",
@@ -65,20 +73,29 @@
         "builder": "DOCKERFILE"
       },
       "deploy": {
-        "startCommand": "celery --app src.celery_app:app worker -l warning",
+        "startCommand": "bash -c 'echo \"Waiting for dependencies...\"; sleep 15; exec celery --app src.celery_app:app worker -l warning'",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
       },
       "variables": {
-        "POSTGRES_PASSWORD": "${{Postgres.POSTGRES_PASSWORD}}",
-        "POSTGRES_REPLICA_PASSWORD": "${{Postgres.POSTGRES_PASSWORD}}",
+        "POSTGRES_HOST": "${{Postgres.PGHOST}}",
+        "POSTGRES_PORT": "${{Postgres.PGPORT}}",
+        "POSTGRES_DB": "${{Postgres.PGDATABASE}}",
+        "POSTGRES_USER": "${{Postgres.PGUSER}}",
+        "POSTGRES_PASSWORD": "${{Postgres.PGPASSWORD}}",
+        "POSTGRES_REPLICA_HOST": "${{Postgres.PGHOST}}",
+        "POSTGRES_REPLICA_PORT": "${{Postgres.PGPORT}}",
+        "POSTGRES_REPLICA_DB": "${{Postgres.PGDATABASE}}",
+        "POSTGRES_REPLICA_USER": "${{Postgres.PGUSER}}",
+        "POSTGRES_REPLICA_PASSWORD": "${{Postgres.PGPASSWORD}}",
         "CACHE_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
         "AUTH_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
         "CHANNELS_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/2",
         "SESSION_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/3",
         "CELERY_BROKER_URL": "amqp://rabbitmq_user:rabbitmq_password@${{rabbitmq.RAILWAY_PRIVATE_DOMAIN}}:5672",
         "BACKEND_URL": "https://${{backend.RAILWAY_PUBLIC_DOMAIN}}",
-        "FRONTEND_URL": "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}"
+        "FRONTEND_URL": "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}",
+        "FORMS_URL": "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}"
       }
     },
     "celery-beat": {
@@ -91,20 +108,29 @@
         "builder": "DOCKERFILE"
       },
       "deploy": {
-        "startCommand": "celery --pidfile= --app src.celery_app:app beat -l warning -S django",
+        "startCommand": "bash -c 'echo \"Waiting for dependencies...\"; sleep 20; exec celery --pidfile= --app src.celery_app:app beat -l warning -S django'",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
       },
       "variables": {
-        "POSTGRES_PASSWORD": "${{Postgres.POSTGRES_PASSWORD}}",
-        "POSTGRES_REPLICA_PASSWORD": "${{Postgres.POSTGRES_PASSWORD}}",
+        "POSTGRES_HOST": "${{Postgres.PGHOST}}",
+        "POSTGRES_PORT": "${{Postgres.PGPORT}}",
+        "POSTGRES_DB": "${{Postgres.PGDATABASE}}",
+        "POSTGRES_USER": "${{Postgres.PGUSER}}",
+        "POSTGRES_PASSWORD": "${{Postgres.PGPASSWORD}}",
+        "POSTGRES_REPLICA_HOST": "${{Postgres.PGHOST}}",
+        "POSTGRES_REPLICA_PORT": "${{Postgres.PGPORT}}",
+        "POSTGRES_REPLICA_DB": "${{Postgres.PGDATABASE}}",
+        "POSTGRES_REPLICA_USER": "${{Postgres.PGUSER}}",
+        "POSTGRES_REPLICA_PASSWORD": "${{Postgres.PGPASSWORD}}",
         "CACHE_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
         "AUTH_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1",
         "CHANNELS_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/2",
         "SESSION_REDIS_URL": "redis://default:${{Redis.REDISPASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/3",
         "CELERY_BROKER_URL": "amqp://rabbitmq_user:rabbitmq_password@${{rabbitmq.RAILWAY_PRIVATE_DOMAIN}}:5672",
         "BACKEND_URL": "https://${{backend.RAILWAY_PUBLIC_DOMAIN}}",
-        "FRONTEND_URL": "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}"
+        "FRONTEND_URL": "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}",
+        "FORMS_URL": "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}"
       }
     },
     "rabbitmq": {

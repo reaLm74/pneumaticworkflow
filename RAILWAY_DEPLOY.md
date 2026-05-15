@@ -48,12 +48,16 @@
 
 | Переменная               | Значение                                           |
 |--------------------------|-----------------------------------------------------|
-| `POSTGRES_PASSWORD`      | `${{Postgres.POSTGRES_PASSWORD}}`                   |
+| `POSTGRES_HOST`          | `${{Postgres.PGHOST}}`                              |
+| `POSTGRES_PORT`          | `${{Postgres.PGPORT}}`                              |
+| `POSTGRES_DB`            | `${{Postgres.PGDATABASE}}`                          |
+| `POSTGRES_USER`          | `${{Postgres.PGUSER}}`                              |
+| `POSTGRES_PASSWORD`      | `${{Postgres.PGPASSWORD}}`                          |
 | `CACHE_REDIS_URL`        | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/0` |
 | `AUTH_REDIS_URL`         | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/1` |
 | `CHANNELS_REDIS_URL`     | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/2` |
 | `SESSION_REDIS_URL`      | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/3` |
-| `CELERY_BROKER_URL`      | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/4` |
+| `CELERY_BROKER_URL`      | `amqp://...@${{rabbitmq.RAILWAY_PRIVATE_DOMAIN}}:5672` |
 | `BACKEND_URL`            | `https://${{RAILWAY_PUBLIC_DOMAIN}}`                |
 | `FRONTEND_URL`           | `https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}`       |
 | `ALLOWED_HOSTS`          | `${{RAILWAY_PUBLIC_DOMAIN}} ${{RAILWAY_PRIVATE_DOMAIN}} localhost` |
@@ -77,11 +81,12 @@
 
 Наследуют те же переменные БД и Redis что и Backend.
 Не имеют публичного домена (внутренние воркеры).
+Celery Worker ждёт 15 секунд перед запуском, Celery Beat — 20 секунд (для ожидания зависимостей).
 
 | Переменная          | Значение                                           |
 |---------------------|-----------------------------------------------------|
-| `CELERY_BROKER_URL` | `redis://...@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379/4` |
-| Все `POSTGRES_*`    | Те же что у Backend                                 |
+| `CELERY_BROKER_URL` | `amqp://...@${{rabbitmq.RAILWAY_PRIVATE_DOMAIN}}:5672` |
+| Все `POSTGRES_*`    | Через `${{Postgres.PG*}}` — те же что у Backend    |
 | Все `*_REDIS_URL`   | Те же что у Backend                                 |
 
 ## Feature-флаги (Frontend Dockerfile)
