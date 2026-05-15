@@ -29,12 +29,12 @@ ENV PYTHONUNBUFFERED=1 \
 # Postgres (override with Railway-provided values)
 ENV POSTGRES_HOST=postgres.railway.internal \
     POSTGRES_PORT=5432 \
-    POSTGRES_DB=railway \
+    POSTGRES_DB=postgres \
     POSTGRES_USER=postgres \
     POSTGRES_PASSWORD=password \
     POSTGRES_REPLICA_HOST=postgres.railway.internal \
     POSTGRES_REPLICA_PORT=5432 \
-    POSTGRES_REPLICA_DB=railway \
+    POSTGRES_REPLICA_DB=postgres \
     POSTGRES_REPLICA_USER=postgres \
     POSTGRES_REPLICA_PASSWORD=password
 
